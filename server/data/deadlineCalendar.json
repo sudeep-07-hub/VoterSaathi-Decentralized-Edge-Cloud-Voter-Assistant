@@ -1,0 +1,65 @@
+[
+  {
+    "id": "form8_correction_2026",
+    "label": "Form 8 correction window closes",
+    "date": "2026-05-05",
+    "form": "Form 8",
+    "urgency_threshold_days": 7,
+    "description": "Last date to submit corrections to name, address, or photo on the electoral roll.",
+    "state": "all"
+  },
+  {
+    "id": "voter_roll_draft_2026",
+    "label": "Draft electoral roll publication",
+    "date": "2026-05-10",
+    "form": null,
+    "urgency_threshold_days": 3,
+    "description": "Draft rolls published for public review. Check your name and details.",
+    "state": "all"
+  },
+  {
+    "id": "form6_registration_2026",
+    "label": "New voter registration deadline",
+    "date": "2026-05-20",
+    "form": "Form 6",
+    "urgency_threshold_days": 7,
+    "description": "Last date for new voter registration for upcoming bye-elections.",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "tn_byeelection_2026",
+    "label": "Tamil Nadu Bye-Election — Hosur AC",
+    "date": "2026-06-15",
+    "form": null,
+    "urgency_threshold_days": 14,
+    "description": "Bye-election for Hosur Assembly Constituency. Ensure your voter details are up to date.",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "ka_mcc_start_2026",
+    "label": "Model Code of Conduct begins — Karnataka",
+    "date": "2026-06-01",
+    "form": null,
+    "urgency_threshold_days": 7,
+    "description": "MCC enforcement begins. No new registrations or changes allowed after this date.",
+    "state": "Karnataka"
+  },
+  {
+    "id": "photo_upload_deadline_2026",
+    "label": "Voter photo upload window closes",
+    "date": "2026-05-08",
+    "form": "Form 8",
+    "urgency_threshold_days": 5,
+    "description": "Last date to upload or update your photograph on the electoral roll.",
+    "state": "all"
+  },
+  {
+    "id": "form8a_transposition_2026",
+    "label": "Form 8A transposition deadline",
+    "date": "2026-05-25",
+    "form": "Form 8A",
+    "urgency_threshold_days": 7,
+    "description": "Last date to apply for transposition of entry within the same constituency.",
+    "state": "all"
+  }
+]

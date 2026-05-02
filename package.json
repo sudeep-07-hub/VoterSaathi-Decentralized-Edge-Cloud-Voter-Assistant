@@ -1,0 +1,19 @@
+{
+  "name": "votersaathi-edge-cloud",
+  "version": "1.0.0",
+  "description": "VoterSaathi+ — Decentralized Edge-Cloud Voter Assistant for ECI",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js"
+  },
+  "keywords": ["voter", "election", "india", "civic-tech", "multi-agent"],
+  "author": "VoterSaathi+ Team",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "uuid": "^14.0.0"
+  }
+}
