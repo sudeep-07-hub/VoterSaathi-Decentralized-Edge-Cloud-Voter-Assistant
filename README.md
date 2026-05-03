@@ -354,4 +354,4 @@ Electoral data referenced in demo profiles is fictional and for demonstration on
 
 ---
 
-*VoterSaathi+ v2.1 · Built with Google Cloud · Election Commission of India · 2026*
+*VoterSaathi+ v2.1 · 2026*
