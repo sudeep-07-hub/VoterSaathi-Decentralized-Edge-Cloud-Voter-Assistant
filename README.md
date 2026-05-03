@@ -355,7 +355,7 @@ Voice input and output are available in all 22 via Google Cloud Speech APIs.
 
 ## Contributing
 
-This project was built for the Google Cloud Hackathon 2026. If you are forking or
+This project was built for the PromptWars Virtual 2026. If you are forking or
 extending it:
 
 1. Fork the repository
