@@ -136,11 +136,45 @@ function populateVoterCardFromAgent(data) {
   document.getElementById('vc-footer-state').textContent = `${data.state || '—'} · 2026 Roll`;
 }
 
+// ── Accessibility Toggles ───────────────────────────────────
+function toggleHighContrast() {
+  document.body.classList.toggle('high-contrast');
+  const isHC = document.body.classList.contains('high-contrast');
+  localStorage.setItem('votersaathi_high_contrast', isHC);
+}
+
+let currentFontScale = 1;
+function changeFontSize(delta) {
+  currentFontScale = Math.max(0.8, Math.min(1.4, currentFontScale + (delta * 0.1)));
+  document.body.style.zoom = currentFontScale;
+  // For Firefox support:
+  document.body.style.transform = currentFontScale !== 1 ? `scale(${currentFontScale})` : 'none';
+  document.body.style.transformOrigin = 'top left';
+  if(currentFontScale !== 1) {
+    document.body.style.width = `${100 / currentFontScale}%`;
+    document.body.style.height = `${100 / currentFontScale}%`;
+  } else {
+    document.body.style.width = '100%';
+    document.body.style.height = '100%';
+  }
+  localStorage.setItem('votersaathi_font_scale', currentFontScale);
+}
+
 // ── Init ─────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   initChatResize();
   Dashboard.load();
   Chat.init();
+
+  // Restore accessibility settings
+  if (localStorage.getItem('votersaathi_high_contrast') === 'true') {
+    document.body.classList.add('high-contrast');
+  }
+  const savedScale = localStorage.getItem('votersaathi_font_scale');
+  if (savedScale) {
+    currentFontScale = parseFloat(savedScale);
+    changeFontSize(0); // Applies the scale
+  }
 
   // Sidebar nav
   document.querySelectorAll('.nav-item').forEach(item => {

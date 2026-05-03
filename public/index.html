@@ -66,7 +66,9 @@
         </div>
       </div>
 
-      <div class="sidebar-footer">VoterSaathi+ v2.0 · ECI</div>
+      <div class="sidebar-footer">
+        <div>VoterSaathi+ v2.1 · ECI</div>
+      </div>
     </nav>
 
     <!-- ═══ MAIN CONTENT ═══ -->
@@ -76,6 +78,12 @@
       <div class="toprow">
         <div class="page-title">Dashboard</div>
         <div class="top-actions">
+          <div class="accessibility-controls">
+            <button onclick="toggleHighContrast()" aria-label="Toggle High Contrast" title="High Contrast">🌗</button>
+            <button onclick="changeFontSize(-1)" aria-label="Decrease Font Size" title="Smaller Text">A-</button>
+            <button onclick="changeFontSize(1)" aria-label="Increase Font Size" title="Larger Text">A+</button>
+          </div>
+          <div style="width: 1px; height: 24px; background: var(--border); margin: 0 8px;"></div>
           <div class="status-dot"></div>
           <span class="status-label">Online · Synced</span>
           <button class="chat-toggle-btn" id="chatToggleBtn" onclick="toggleChat()">

@@ -9,9 +9,9 @@ Built for the Election Commission of India · Google Cloud Hackathon 2026
 
 VoterSaathi+ is a proactive, multilingual voter assistance web application that eliminates the core failure of existing government portals — making citizens search for information they urgently need.
 
-Instead of a reactive FAQ chatbot, VoterSaathi+ is a **multi-agent AI system** where seven specialist agents work in parallel: one tracks your deadlines before you miss them, one monitors your polling booth for reassignments, one validates your documents, one speaks your language. A master Orchestrator routes every question to the right agent and returns a response in under a second — fully offline-capable for the most critical queries.
+Instead of a reactive FAQ chatbot, VoterSaathi+ is a **multi-agent AI system** where seven specialist agents work in parallel: one tracks your deadlines before you miss them, one monitors your polling booth for reassignments, one validates your documents, one speaks your language. A master Orchestrator routes every question to the right agent and returns a response in under a second.
 
-The system runs on a **three-tier decentralized architecture**: computation happens on the device first, regional mesh nodes second, and Google Cloud only when necessary. Personal data never leaves the device unless the voter explicitly initiates a sync.
+> **Prototype Note:** This codebase was built as a proof-of-concept for the hackathon. Several production architectural components (like regional mesh networking, AES-256 local DB encryption, OAuth, and true on-device IndicBERT inference) are mocked or omitted in this repository to focus on the core agent routing, UI logic, and UX flow.
 
 ---
 
@@ -42,20 +42,14 @@ VoterSaathi+ fixes all four.
 
 ```
     ┌───────────────────────────────────────┐
-    │           GOOGLE CLOUD CORE           │
-    │  Firestore · FCM · Cloud Run · Doc AI │
+    │              CLOUD RUN                │
+    │  Node.js · Express · Agent Routers    │
     └──────────────────┬────────────────────┘
-                       │ OTA Sync · FCM · Model Weights
+                       │ HTTP/REST
                        ▼
     ┌───────────────────────────────────────┐
-    │         REGIONAL GATEWAYS             │
-    │   Edge Nodes · Mesh Networks · MQTT   │
-    └──────────────────┬────────────────────┘
-                       │ Secure Sync · P2P Updates
-                       ▼
-    ┌───────────────────────────────────────┐
-    │           DEVICE EDGE                 │
-    │  Browser · Agents · SQLite · Alerts   │
+    │             CLIENT UI                 │
+    │  Browser · HTML/CSS/JS · Alerts       │
     └───────────────────────────────────────┘
 ```
 
@@ -81,18 +75,10 @@ Every user message passes through a master **Orchestrator** that classifies inte
 |---|---|
 | Frontend | Vanilla HTML · CSS · JavaScript (no framework) |
 | Backend | Node.js · Express |
-| Database | Google Cloud Firestore |
-| Auth | Google Identity · OAuth 2.0 |
-| Maps | Google Maps Embed API · Distance Matrix API |
-| Push notifications | Firebase Cloud Messaging (FCM) |
-| OTA config | Firebase Remote Config |
-| Document parsing | Google Document AI |
-| Translation | Google Cloud Translation API |
-| Voice I/O | Google Cloud Speech-to-Text · Text-to-Speech |
-| File export | Google Drive API |
-| NLP (on-device) | AI4Bharat IndicBERT · TensorFlow Lite |
+| Maps | Google Maps Embed API (Logic implemented; requires API key) |
+| Push notifications | Simulated in UI alerts |
+| Multilingual | Simulated via `languageAgent.js` (Production targets AI4Bharat / Google Cloud Translate) |
 | Deployment | Google Cloud Run |
-| Encryption | SQLCipher (AES-256, on-device profile store) |
 
 ---
 
@@ -304,38 +290,28 @@ Every agent follows two rules that prevent half-answers:
 
 ## Privacy & Security
 
-- All personally identifiable information (PII) is stored on-device in **SQLCipher AES-256 encrypted** SQLite.
+- For this prototype, all user profiles are loaded from a static mock file (`sampleProfiles.json`) and held in memory.
 - EPIC numbers are masked to the last 3 characters in all UI displays.
 - Aadhaar numbers are masked to the last 4 digits everywhere.
-- Cloud payloads have **differential privacy noise** applied before transmission — raw PII is never sent to the cloud.
-- All cloud lookups are written to a local **audit trail** with timestamp and purpose.
-- Google OAuth 2.0 handles identity — no passwords stored.
+- In a production environment, this is designed to integrate OAuth 2.0 and SQLCipher encrypted SQLite for fully local, secure PII storage.
 
 ---
 
 ## Multilingual Support
 
-VoterSaathi+ supports all 22 scheduled Indian languages:
-
-Hindi · Tamil · Telugu · Kannada · Malayalam · Bengali · Marathi · Gujarati ·
-Punjabi · Odia · Urdu · Assamese · Maithili · Konkani · Manipuri · Nepali ·
-Sanskrit · Santali · Sindhi · Kashmiri · Dogri · Bodo
-
-On-device inference (AI4Bharat IndicBERT, no network required) handles the 12
-highest-volume languages. Google Cloud Translation API covers the remaining 10.
-Voice input and output are available in all 22 via Google Cloud Speech APIs.
+VoterSaathi+ supports multi-language interactions through the `languageAgent.js`. 
+In this prototype, translation is simulated to demonstrate the workflow. 
+A production implementation would route the 12 highest-volume languages to an on-device AI4Bharat IndicBERT model, and the rest to Google Cloud Translation API.
 
 ---
 
 ## Accessibility
 
+- **High contrast mode toggle** (Implemented in UI)
+- **Font size adjustment** (Implemented in UI: scale up/down)
 - WCAG 2.1 AA compliant minimum tap targets (44×44px)
 - Full screen reader support with ARIA labels on all interactive elements
-- Voice input and output in all 22 supported languages
-- High contrast mode toggle
-- Font size adjustment (small / medium / large)
-- Accessibility complaints auto-escalated to the District Election Officer
-  with HIGH priority — no manual routing needed
+- Accessibility complaints auto-escalated with HIGH priority — no manual routing needed
 
 ---
 
