@@ -236,19 +236,19 @@ The interface is designed around a single principle: **the voter should never ha
 ### Three-Column Layout
 
 ```
-┌──────────────────┬─────────────────────────────┬───────────────┐
-│  Sidebar Nav     │  Main Dashboard             │  Saathi Bot   │
-│  (collapsible)   │                             │  (resizable,  │
-│                  │  Hero card                  │  collapsible) │
-│  Dashboard       │  EPIC · Booth · Roll cards  │               │
+┌──────────────────┬─────────────────────────────┬───────────────-┐
+│  Sidebar Nav     │  Main Dashboard             │  Saathi Bot    │
+│  (collapsible)   │                             │  (resizable,   │
+│                  │  Hero card                  │  collapsible)  │
+│  Dashboard       │  EPIC · Booth · Roll cards  │                │
 │  My Voter Card   │  Progress tracker           │  Agent-labelled│
-│  Polling Booth   │  Proactive alerts           │  responses    │
-│  Update Details  │  Google Map                 │  Quick actions│
-│  Check Roll      │                             │  Free input   │
-│  Track App       │                             │               │
-│  Deadlines [n]   │                             │               │
-│  Announcements   │                             │               │
-└──────────────────┴─────────────────────────────┴───────────────┘
+│  Polling Booth   │  Proactive alerts           │  responses     │
+│  Update Details  │  Google Map                 │  Quick actions │
+│  Check Roll      │                             │  Free input    │
+│  Track App       │                             │                │
+│  Deadlines [n]   │                             │                │
+│  Announcements   │                             │                │
+└──────────────────┴─────────────────────────────┴───────────────-┘
 ```
 
 ### Key UI Behaviours
