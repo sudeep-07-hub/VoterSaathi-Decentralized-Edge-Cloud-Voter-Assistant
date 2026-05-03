@@ -1,3 +1,15 @@
+/**
+ * @file    config.js
+ * @module  Config
+ * @desc    Centralised configuration loader. Reads environment variables via
+ *          dotenv, exposes GCP/Firebase credentials, and computes feature
+ *          flags that enable graceful degradation when API keys are absent.
+ * @version 2.1.0
+ * @author  VoterSaathi+ Team
+ */
+
+'use strict';
+
 require('dotenv').config();
 
 const config = {

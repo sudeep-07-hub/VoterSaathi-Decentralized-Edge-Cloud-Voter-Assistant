@@ -1,7 +1,16 @@
 /**
- * Application Agent — Form 6/7/8/8A queries, document validation, status tracking
- * Integrates with Google Document AI (OCR), Drive API, and Workspace Forms.
+ * @file    applicationAgent.js
+ * @module  ApplicationAgent
+ * @desc    Handles Form 6/7/8/8A queries — form decision tree, document
+ *          validation via Google Document AI, and application status tracking.
+ * @version 2.1.0
+ * @author  VoterSaathi+ Team
  */
+
+'use strict';
+
+// eslint-disable-next-line no-unused-vars
+const _types = require('../utils/types'); // JSDoc type references only
 
 const config = require('../config');
 

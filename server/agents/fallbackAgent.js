@@ -1,7 +1,17 @@
 /**
- * Fallback Agent — Catches unclassified queries with proactive suggestions
- * Ensures the user is never stuck or left without a next step.
+ * @file    fallbackAgent.js
+ * @module  FallbackAgent
+ * @desc    Catches all unclassified queries. Returns contextually relevant
+ *          suggested actions and proactively surfaces the nearest deadline
+ *          after 30 seconds of user inactivity.
+ * @version 2.1.0
+ * @author  VoterSaathi+ Team
  */
+
+'use strict';
+
+// eslint-disable-next-line no-unused-vars
+const _types = require('../utils/types'); // JSDoc type references only
 
 const deadlineAgent = require('./deadlineAgent');
 

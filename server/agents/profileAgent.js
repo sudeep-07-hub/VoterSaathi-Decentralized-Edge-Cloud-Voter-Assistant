@@ -1,7 +1,17 @@
 /**
- * Profile Agent — Handles voter registration data queries
- * Local-first lookups with cloud fallback. Never exposes raw PII.
+ * @file    profileAgent.js
+ * @module  ProfileAgent
+ * @desc    Handles voter identity queries — EPIC details, registration
+ *          completeness scoring, address mismatch detection, and voter
+ *          card modal trigger. All lookups are local-first with cloud fallback.
+ * @version 2.1.0
+ * @author  VoterSaathi+ Team
  */
+
+'use strict';
+
+// eslint-disable-next-line no-unused-vars
+const _types = require('../utils/types'); // JSDoc type references only
 
 const profiles = require('../data/sampleProfiles.json');
 

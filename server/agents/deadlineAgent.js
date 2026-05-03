@@ -1,7 +1,17 @@
 /**
- * Deadline Agent — Proactive deadline tracking and alerting
- * Integrates with Firebase Remote Config (OTA sync) and Google Calendar deep links.
+ * @file    deadlineAgent.js
+ * @module  DeadlineAgent
+ * @desc    Tracks all ECI-published deadlines proactively. Computes days
+ *          remaining, classifies urgency, and triggers FCM push notifications
+ *          when deadlines are within threshold.
+ * @version 2.1.0
+ * @author  VoterSaathi+ Team
  */
+
+'use strict';
+
+// eslint-disable-next-line no-unused-vars
+const _types = require('../utils/types'); // JSDoc type references only
 
 const deadlines = require('../data/deadlineCalendar.json');
 

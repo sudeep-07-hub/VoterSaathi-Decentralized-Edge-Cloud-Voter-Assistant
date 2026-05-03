@@ -1,8 +1,18 @@
 /**
- * Language Agent — Multilingual support for 22 scheduled Indian languages
- * Integrates with Google Cloud Translation API (cloud) and AI4Bharat IndicBERT (on-device simulation).
- * Also handles Speech-to-Text and Text-to-Speech integration.
+ * @file    languageAgent.js
+ * @module  LanguageAgent
+ * @desc    Transparent multilingual middleware. Detects language of incoming
+ *          messages, translates to English for agent routing, and translates
+ *          responses back to the voter's preferred language.
+ *          Supports all 22 scheduled Indian languages.
+ * @version 2.1.0
+ * @author  VoterSaathi+ Team
  */
+
+'use strict';
+
+// eslint-disable-next-line no-unused-vars
+const _types = require('../utils/types'); // JSDoc type references only
 
 const config = require('../config');
 

@@ -1,7 +1,17 @@
 /**
- * Grievance Agent — Complaint handling, escalation, and empathetic ticketing
- * Integrates with Firestore (ticket storage), Cloud Translation, and FCM.
+ * @file    grievanceAgent.js
+ * @module  GrievanceAgent
+ * @desc    Handles voter complaints, generates Firestore-backed ticket IDs,
+ *          classifies grievance categories, and routes accessibility complaints
+ *          through a fast-path escalation to the District Election Officer.
+ * @version 2.1.0
+ * @author  VoterSaathi+ Team
  */
+
+'use strict';
+
+// eslint-disable-next-line no-unused-vars
+const _types = require('../utils/types'); // JSDoc type references only
 
 const crypto = require('crypto');
 

@@ -1,27 +1,63 @@
 /**
- * VoterSaathi+ — Express Server Entry Point
- * Decentralized Edge-Cloud Voter Assistant
+ * @file    index.js
+ * @module  Server
+ * @desc    Express entry point. Defines API routes, middleware, error
+ *          handlers, and health check endpoint. All chat requests are
+ *          validated, sanitised, and forwarded to the Orchestrator.
+ * @version 2.1.0
+ * @author  VoterSaathi+ Team
  */
+
+'use strict';
 
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const config = require('./config');
 const orchestrator = require('./agents/orchestrator');
+const { validateChatRequest, sanitiseMessage } = require('./utils/validate');
 
 const app = express();
 
-// Middleware
+// ─── Security Middleware ────────────────────────────────────────────────────
+
+/**
+ * Helmet sets secure HTTP response headers automatically:
+ * X-Content-Type-Options, X-Frame-Options, X-XSS-Protection,
+ * Strict-Transport-Security, Content-Security-Policy, and more.
+ */
+app.use(helmet({
+  contentSecurityPolicy: false, // disabled for embedded Google Maps iframes
+}));
+
+/**
+ * Rate limiter for the /api/chat endpoint.
+ * Prevents abuse and ensures fair access under high load.
+ * 60 requests per minute per IP is generous for a chat interface.
+ */
+const chatLimiter = rateLimit({
+  windowMs:       60 * 1000,   // 1 minute window
+  max:            60,           // 60 requests per minute per IP
+  standardHeaders: true,        // return RateLimit-* response headers
+  legacyHeaders:  false,
+  message: {
+    error: 'Too many requests. Please wait a moment and try again.'
+  }
+});
+
+// ─── Core Middleware ────────────────────────────────────────────────────────
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // ─── Health check (Cloud Run requirement) ───────────────────────────────────
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.status(200).json({
     status: 'ok',
     service: 'votersaathi-edge-cloud',
-    version: '1.0.0',
+    version: '2.1.0',
     timestamp: new Date().toISOString(),
     features: config.features,
   });
@@ -31,36 +67,31 @@ app.get('/health', (req, res) => {
 
 /**
  * POST /api/chat — Main chat endpoint
- * Receives user message and returns orchestrator response
+ * Receives user message and returns orchestrator response.
+ * All input is validated via validate.js before reaching agent logic.
  */
-app.post('/api/chat', async (req, res) => {
+app.post('/api/chat', chatLimiter, async (req, res) => {
   try {
-    const { message, user_id, device_profile } = req.body;
+    // Step 1: Validate
+    const { valid, error } = validateChatRequest(req.body);
+    if (!valid) return res.status(400).json({ error });
 
-    if (!message || typeof message !== 'string' || message.trim().length === 0) {
-      return res.status(400).json({
-        error: 'Message is required and must be a non-empty string.',
-      });
-    }
-
-    if (!user_id) {
-      return res.status(400).json({
-        error: 'user_id is required.',
-      });
-    }
+    // Step 2: Sanitise
+    const { user_id, device_profile } = req.body;
 
     const input = {
       user_id,
-      message: message.trim(),
+      message: sanitiseMessage(req.body.message),
       device_profile: device_profile || {},
       timestamp: new Date().toISOString(),
     };
 
+    // Step 3: Route through orchestrator
     const response = await orchestrator.handleMessage(input);
 
     res.json(response);
   } catch (error) {
-    console.error('Chat error:', error);
+    console.error('[API /api/chat] Unhandled error:', error.message);
     res.status(500).json({
       error: 'An internal error occurred. Please try again.',
       response_text: 'I apologise for the inconvenience. Something went wrong on my end. Please try your question again.',

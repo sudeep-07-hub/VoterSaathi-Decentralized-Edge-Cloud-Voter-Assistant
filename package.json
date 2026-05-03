@@ -1,8 +1,27 @@
 {
-  "name": "votersaathi-edge-cloud",
-  "version": "1.0.0",
-  "description": "VoterSaathi+ — Decentralized Edge-Cloud Voter Assistant for ECI",
+  "name": "votersaathi-plus",
+  "version": "2.1.0",
+  "description": "Decentralized edge-cloud voter assistance system for the Election Commission of India. Multi-agent AI with proactive push alerts, multilingual support for 22 Indian languages, and Google Cloud integration.",
   "main": "server/index.js",
+  "author": "VoterSaathi+ Team",
+  "license": "MIT",
+  "private": false,
+  "keywords": [
+    "voter-assistance",
+    "election-commission-india",
+    "google-cloud",
+    "multi-agent",
+    "firebase",
+    "civic-tech",
+    "eci",
+    "india",
+    "multilingual",
+    "cloud-run"
+  ],
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=9.0.0"
+  },
   "scripts": {
     "start": "node server/index.js",
     "dev": "node server/index.js",
@@ -10,8 +29,8 @@
     "test:unit": "jest tests/agents tests/utils",
     "test:integration": "jest tests/integration",
     "test:watch": "jest --watch",
-    "lint": "eslint server/**/*.js",
-    "lint:fix": "eslint server/**/*.js --fix"
+    "lint": "eslint server/**/*.js tests/**/*.js",
+    "lint:fix": "eslint server/**/*.js tests/**/*.js --fix"
   },
   "jest": {
     "testEnvironment": "node",
@@ -27,19 +46,12 @@
       "!server/index.js"
     ]
   },
-  "keywords": [
-    "voter",
-    "election",
-    "india",
-    "civic-tech",
-    "multi-agent"
-  ],
-  "author": "VoterSaathi+ Team",
-  "license": "MIT",
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^7.5.1",
+    "helmet": "^8.1.0",
     "uuid": "^14.0.0"
   },
   "devDependencies": {

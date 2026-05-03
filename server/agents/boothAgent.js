@@ -1,8 +1,17 @@
 /**
- * Booth Agent v2 — Full sub-intent routing (D5)
- * Handles TIMING, LOCATION, ACCESSIBILITY, and FULL queries.
- * Integrates with Google Maps (cloud) and Haversine (offline).
+ * @file    boothAgent.js
+ * @module  BoothAgent
+ * @desc    Handles all polling booth queries — location, timing,
+ *          accessibility, and change detection.
+ *          Sub-intents: TIMING | LOCATION | FULL | ACCESSIBILITY
+ * @version 2.1.0
+ * @author  VoterSaathi+ Team
  */
+
+'use strict';
+
+// eslint-disable-next-line no-unused-vars
+const _types = require('../utils/types'); // JSDoc type references only
 
 const boothData = require('../data/boothData.json');
 

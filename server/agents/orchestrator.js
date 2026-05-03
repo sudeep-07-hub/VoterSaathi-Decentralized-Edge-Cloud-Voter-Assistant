@@ -1,8 +1,17 @@
 /**
- * Orchestrator Agent — Master Router
- * Receives every user message, classifies intent, dispatches to specialist agent,
- * and merges response with UI state payload for the frontend renderer.
+ * @file    orchestrator.js
+ * @module  Orchestrator
+ * @desc    Master intent router. Classifies every incoming voter message,
+ *          dispatches to the correct specialist agent, and merges the
+ *          response with a UI state payload for the frontend renderer.
+ * @version 2.1.0
+ * @author  VoterSaathi+ Team
  */
+
+'use strict';
+
+// eslint-disable-next-line no-unused-vars
+const _types = require('../utils/types'); // JSDoc type references only
 
 const { classifyIntent, detectLanguage, classifyBoothSubIntent } = require('../utils/intentClassifier');
 const profileAgent = require('./profileAgent');

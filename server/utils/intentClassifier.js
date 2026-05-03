@@ -1,8 +1,15 @@
 /**
- * Intent Classifier — Deterministic keyword-scoring router
- * Maps user messages to agent domains using weighted keyword matching.
- * No ML dependency — fully offline-safe and unit-testable.
+ * @file    intentClassifier.js
+ * @module  IntentClassifier
+ * @desc    Keyword-scoring intent classifier. Maps user messages to agent
+ *          domains (BOOTH | PROFILE | APPLICATION | DEADLINE | GRIEVANCE |
+ *          LANGUAGE | FALLBACK) and booth sub-intents
+ *          (TIMING | LOCATION | FULL | ACCESSIBILITY).
+ * @version 2.1.0
+ * @author  VoterSaathi+ Team
  */
+
+'use strict';
 
 const DOMAIN_KEYWORDS = {
   PROFILE: {
