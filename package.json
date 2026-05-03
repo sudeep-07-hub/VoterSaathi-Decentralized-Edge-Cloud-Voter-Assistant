@@ -5,9 +5,35 @@
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
-    "dev": "node server/index.js"
+    "dev": "node server/index.js",
+    "test": "jest --coverage",
+    "test:unit": "jest tests/agents tests/utils",
+    "test:integration": "jest tests/integration",
+    "test:watch": "jest --watch",
+    "lint": "eslint server/**/*.js",
+    "lint:fix": "eslint server/**/*.js --fix"
   },
-  "keywords": ["voter", "election", "india", "civic-tech", "multi-agent"],
+  "jest": {
+    "testEnvironment": "node",
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "functions": 80,
+        "lines": 80
+      }
+    },
+    "collectCoverageFrom": [
+      "server/**/*.js",
+      "!server/index.js"
+    ]
+  },
+  "keywords": [
+    "voter",
+    "election",
+    "india",
+    "civic-tech",
+    "multi-agent"
+  ],
   "author": "VoterSaathi+ Team",
   "license": "MIT",
   "dependencies": {
@@ -15,5 +41,10 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "uuid": "^14.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.4",
+    "jest": "^30.3.0",
+    "supertest": "^7.2.2"
   }
 }

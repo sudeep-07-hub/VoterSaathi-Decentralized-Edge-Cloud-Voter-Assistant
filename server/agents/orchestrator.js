@@ -127,16 +127,13 @@ function getAlertTitle(response) {
  * @returns {object} Orchestrator output schema
  */
 async function handleMessage(input) {
-  const {
-    user_id = 'USR-TN-001',
-    message,
-    device_profile = {},
-  } = input;
+  const { user_id = 'USR-TN-001', message, device_profile, user_profile } = input;
+  const profileData = device_profile || user_profile || {};
 
   // Step 1: Detect language
   const langDetection = detectLanguage(message);
   let processedMessage = message;
-  let userLanguage = langDetection.language;
+  const userLanguage = langDetection.language;
   let languageData = null;
 
   // Step 2: If non-English/Hindi Indic language detected, run Language Agent
@@ -153,13 +150,13 @@ async function handleMessage(input) {
   // Step 4: Build user profile context
   const userProfile = {
     user_id,
-    first_name: device_profile.name ? device_profile.name.split(' ')[0] : 'Voter',
-    name: device_profile.name || 'Voter',
-    constituency: device_profile.constituency || 'Hosur',
-    state: device_profile.state || 'Tamil Nadu',
-    booth_id: device_profile.booth_id || 'TN_KRI_42',
-    completion_pct: device_profile.completion_pct || 75,
-    ...device_profile,
+    first_name: profileData.name ? profileData.name.split(' ')[0] : 'Voter',
+    name: profileData.name || 'Voter',
+    constituency: profileData.constituency || 'Hosur',
+    state: profileData.state || 'Tamil Nadu',
+    booth_id: profileData.booth_id || 'TN_KRI_42',
+    completion_pct: profileData.completion_pct || 75,
+    ...profileData,
   };
 
   // Step 5: Dispatch to specialist agent
@@ -167,7 +164,7 @@ async function handleMessage(input) {
 
   switch (intent.domain) {
     case 'PROFILE':
-      agentResponse = profileAgent.handle(processedMessage, userProfile);
+      agentResponse = await profileAgent.handle(processedMessage, userProfile);
       break;
     case 'BOOTH': {
       const boothSubIntent = classifyBoothSubIntent(processedMessage);
@@ -175,17 +172,17 @@ async function handleMessage(input) {
       break;
     }
     case 'APPLICATION':
-      agentResponse = applicationAgent.handle(processedMessage, userProfile);
+      agentResponse = await applicationAgent.handle(processedMessage, userProfile);
       break;
     case 'DEADLINE':
-      agentResponse = deadlineAgent.handle(processedMessage, userProfile);
+      agentResponse = await deadlineAgent.handle(processedMessage, userProfile);
       break;
     case 'GRIEVANCE':
-      agentResponse = grievanceAgent.handle(processedMessage, userProfile);
+      agentResponse = await grievanceAgent.handle(processedMessage, userProfile);
       break;
     case 'FALLBACK':
     default:
-      agentResponse = fallbackAgent.handle(processedMessage, userProfile);
+      agentResponse = await fallbackAgent.handle(processedMessage, userProfile);
       break;
   }
 
@@ -262,4 +259,8 @@ function getDashboardData(userId, userProfile) {
   };
 }
 
-module.exports = { handleMessage, getDashboardData };
+module.exports = { 
+  handleMessage, 
+  route: handleMessage,
+  getDashboardData 
+};

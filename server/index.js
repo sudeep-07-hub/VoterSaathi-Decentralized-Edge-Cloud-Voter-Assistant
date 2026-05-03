@@ -19,7 +19,7 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 // ─── Health check (Cloud Run requirement) ───────────────────────────────────
 app.get('/health', (req, res) => {
   res.status(200).json({
-    status: 'healthy',
+    status: 'ok',
     service: 'votersaathi-edge-cloud',
     version: '1.0.0',
     timestamp: new Date().toISOString(),
@@ -43,8 +43,14 @@ app.post('/api/chat', async (req, res) => {
       });
     }
 
+    if (!user_id) {
+      return res.status(400).json({
+        error: 'user_id is required.',
+      });
+    }
+
     const input = {
-      user_id: user_id || 'USR-TN-001',
+      user_id,
       message: message.trim(),
       device_profile: device_profile || {},
       timestamp: new Date().toISOString(),
@@ -115,25 +121,27 @@ app.get('/{*splat}', (req, res) => {
 
 // ─── Start server ────────────────────────────────────────────────────────────
 const PORT = config.port;
-app.listen(PORT, () => {
-  console.log(`
-  ╔══════════════════════════════════════════════════════╗
-  ║       VoterSaathi+ — Edge-Cloud Voter Assistant     ║
-  ╠══════════════════════════════════════════════════════╣
-  ║  Server:    http://localhost:${PORT}                   ║
-  ║  Health:    http://localhost:${PORT}/health              ║
-  ║  API Chat:  POST http://localhost:${PORT}/api/chat      ║
-  ║  Env:       ${config.env.padEnd(39)}║
-  ║  Project:   ${config.gcp.projectId.padEnd(39)}║
-  ╚══════════════════════════════════════════════════════╝
-  
-  Feature Flags:
-    Maps:      ${config.features.mapsEnabled ? '✅ Enabled' : '⚠️  Disabled (no API key)'}
-    Translate: ${config.features.translateEnabled ? '✅ Enabled' : '⚠️  Disabled (no API key)'}
-    Speech:    ${config.features.speechEnabled ? '✅ Enabled' : '⚠️  Disabled (no API key)'}
-    Doc AI:    ${config.features.docAiEnabled ? '✅ Enabled' : '⚠️  Disabled (no processor ID)'}
-    Firestore: ${config.features.firestoreEnabled ? '✅ Enabled' : '⚠️  Disabled (no API key)'}
-  `);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`
+    ╔══════════════════════════════════════════════════════╗
+    ║       VoterSaathi+ — Edge-Cloud Voter Assistant     ║
+    ╠══════════════════════════════════════════════════════╣
+    ║  Server:    http://localhost:${PORT}                   ║
+    ║  Health:    http://localhost:${PORT}/health              ║
+    ║  API Chat:  POST http://localhost:${PORT}/api/chat      ║
+    ║  Env:       ${config.env.padEnd(39)}║
+    ║  Project:   ${config.gcp.projectId.padEnd(39)}║
+    ╚══════════════════════════════════════════════════════╝
+    
+    Feature Flags:
+      Maps:      ${config.features.mapsEnabled ? '✅ Enabled' : '⚠️  Disabled (no API key)'}
+      Translate: ${config.features.translateEnabled ? '✅ Enabled' : '⚠️  Disabled (no API key)'}
+      Speech:    ${config.features.speechEnabled ? '✅ Enabled' : '⚠️  Disabled (no API key)'}
+      Doc AI:    ${config.features.docAiEnabled ? '✅ Enabled' : '⚠️  Disabled (no processor ID)'}
+      Firestore: ${config.features.firestoreEnabled ? '✅ Enabled' : '⚠️  Disabled (no API key)'}
+    `);
+  });
+}
 
 module.exports = app;

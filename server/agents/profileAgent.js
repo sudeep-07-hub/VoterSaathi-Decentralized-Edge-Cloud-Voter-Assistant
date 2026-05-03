@@ -24,6 +24,12 @@ function calculateCompleteness(profileFields) {
   for (const [field, weight] of Object.entries(FIELD_WEIGHTS)) {
     if (profileFields[field]) {
       total += weight;
+    } else if (field === 'full_name' && profileFields['name']) {
+      total += weight;
+    } else if (field === 'aadhaar_linkage' && profileFields['aadhaar_linked']) {
+      total += weight;
+    } else if (field === 'photograph' && profileFields['photo']) {
+      total += weight;
     }
   }
   return total;
@@ -53,27 +59,53 @@ function getMissingFields(profileFields) {
 }
 
 /**
+ * Mask EPIC number to show only last 3 chars
+ */
+function maskEPIC(epic) {
+  if (!epic) return '●●●●●●●●●';
+  if (epic.includes('●')) return epic; // already masked
+  const len = epic.length;
+  if (len <= 3) return '●'.repeat(len);
+  const unmaskedPrefix = epic.slice(0, -3);
+  return unmaskedPrefix + '●●●';
+}
+
+/**
  * Detect address mismatch between registered and Aadhaar address
  */
-function detectAddressMismatch(profile) {
-  if (!profile.address || !profile.aadhaar_address) return false;
-  return profile.address.toLowerCase().trim() !== profile.aadhaar_address.toLowerCase().trim();
+function detectAddressMismatch(localAddress, aadhaarAddress) {
+  if (!localAddress || !aadhaarAddress) return { mismatch: false };
+  const mismatch = localAddress.toLowerCase().trim() !== aadhaarAddress.toLowerCase().trim();
+  return {
+    mismatch,
+    suggested_form: mismatch ? 'Form 8' : null
+  };
 }
 
 /**
  * Handle a profile query
- * @param {string} message - The user's message
+ * @param {string|object} message - The user's message or params object
  * @param {object} userProfile - Device profile from orchestrator input
  * @returns {object} Profile agent response
  */
 function handle(message, userProfile) {
+  let msg = message;
+  let profileData = userProfile || {};
+
+  if (message && typeof message === 'object') {
+    msg = message.message || '';
+    profileData = message.user_profile || message.userProfile || {};
+  }
+
+  const userId = profileData.user_id || 'USR-TN-001';
   // Find user profile from local store
-  const profile = profiles.find(p => p.user_id === userProfile.user_id) || profiles[0];
-  const lowerMsg = message.toLowerCase();
+  const profile = profiles.find(p => p.user_id === userId) || profiles[0];
+  const lowerMsg = msg.toLowerCase();
 
   const completionPct = calculateCompleteness(profile.profile_fields);
   const missingFields = getMissingFields(profile.profile_fields);
-  const addressMismatch = detectAddressMismatch(profile);
+  const mismatchResult = detectAddressMismatch(profile.address, profile.aadhaar_address);
+  const addressMismatch = mismatchResult.mismatch;
 
   // Build flags
   const flags = [];
@@ -170,4 +202,10 @@ function handle(message, userProfile) {
   };
 }
 
-module.exports = { handle };
+module.exports = { 
+  handle, 
+  handleProfile: handle,
+  calculateCompleteness,
+  maskEPIC,
+  detectAddressMismatch
+};

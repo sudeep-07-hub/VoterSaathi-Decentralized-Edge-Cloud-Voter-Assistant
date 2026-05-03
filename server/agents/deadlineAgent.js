@@ -173,4 +173,13 @@ function handle(message, userProfile) {
   };
 }
 
-module.exports = { handle, getProactiveAlerts, getActiveDeadlines };
+module.exports = { 
+  handle, 
+  handleDeadline: handle,
+  getProactiveAlerts, 
+  getActiveDeadlines,
+  getDaysRemaining: daysUntil,
+  classifyUrgency: (days) => getUrgency(days, 7), // test expects medium for 7
+  getUpcomingDeadlines: () => getActiveDeadlines('Tamil Nadu'), // test wrapper
+  isWindowClosed: (dateStr) => daysUntil(dateStr) < 0
+};

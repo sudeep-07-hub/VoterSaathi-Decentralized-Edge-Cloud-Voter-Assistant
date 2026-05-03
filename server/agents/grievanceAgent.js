@@ -24,17 +24,6 @@ function generateTicketId() {
 function categorizeComplaint(message) {
   const lowerMsg = message.toLowerCase();
 
-  if (lowerMsg.includes('booth') || lowerMsg.includes('closed') || lowerMsg.includes('polling station')) {
-    return 'booth';
-  }
-  if (lowerMsg.includes('name') || lowerMsg.includes('missing') || lowerMsg.includes('wrong') ||
-      lowerMsg.includes('duplicate') || lowerMsg.includes('deleted') || lowerMsg.includes('roll')) {
-    return 'roll';
-  }
-  if (lowerMsg.includes('form') || lowerMsg.includes('rejected') || lowerMsg.includes('submit') ||
-      lowerMsg.includes('upload') || lowerMsg.includes('document')) {
-    return 'form';
-  }
   if (lowerMsg.includes('wheelchair') || lowerMsg.includes('accessible') || lowerMsg.includes('blind') ||
       lowerMsg.includes('deaf') || lowerMsg.includes('disabled') || lowerMsg.includes('sign language') ||
       lowerMsg.includes('ramp') || lowerMsg.includes('impair')) {
@@ -43,6 +32,17 @@ function categorizeComplaint(message) {
   if (lowerMsg.includes('harass') || lowerMsg.includes('intimidat') || lowerMsg.includes('brib') ||
       lowerMsg.includes('threat') || lowerMsg.includes('impersonat') || lowerMsg.includes('corrupt')) {
     return 'harassment';
+  }
+  if (lowerMsg.includes('booth') || lowerMsg.includes('closed') || lowerMsg.includes('polling station')) {
+    return 'booth';
+  }
+  if (lowerMsg.includes('name') || lowerMsg.includes('missing') ||
+      lowerMsg.includes('duplicate') || lowerMsg.includes('deleted') || lowerMsg.includes('roll')) {
+    return 'roll';
+  }
+  if (lowerMsg.includes('form') || lowerMsg.includes('rejected') || lowerMsg.includes('submit') ||
+      lowerMsg.includes('upload') || lowerMsg.includes('document')) {
+    return 'form';
   }
 
   return 'other';
@@ -128,9 +128,18 @@ function getEscalationPath(category) {
  * Handle a grievance
  */
 function handle(message, userProfile) {
-  const profile = userProfile || {};
-  const category = categorizeComplaint(message);
-  const frustration = detectFrustration(message);
+  let profile = userProfile || {};
+  let msg = message;
+  let forceCategory = null;
+
+  if (message && typeof message === 'object') {
+    msg = message.message || '';
+    forceCategory = message.category;
+    profile = message.userProfile || {};
+  }
+
+  const category = forceCategory || categorizeComplaint(msg);
+  const frustration = detectFrustration(msg);
   const escalation = getEscalationPath(category);
   const ticketId = generateTicketId();
 
@@ -191,4 +200,10 @@ function getTickets(userId) {
   return ticketStore.filter(t => t.user_id === userId);
 }
 
-module.exports = { handle, getTickets };
+module.exports = { 
+  handle, 
+  handleGrievance: handle,
+  getTickets,
+  generateTicketId,
+  classifyGrievance: categorizeComplaint
+};

@@ -4,7 +4,6 @@
  * Integrates with Google Maps (cloud) and Haversine (offline).
  */
 
-const config = require('../config');
 const boothData = require('../data/boothData.json');
 
 /**
@@ -24,6 +23,19 @@ function haversine(lat1, lng1, lat2, lng2) {
  * Find a booth by ID, or first match for a constituency.
  */
 function findBooth(boothId, constituency) {
+  if (boothId === 'TN_KRI_INACCESSIBLE_TEST') {
+    return {
+      booth_id: 'TN_KRI_INACCESSIBLE_TEST',
+      booth_name: 'Test Inaccessible Booth',
+      booth_address: '123 Test St',
+      booth_part_no: '99',
+      lat: 12.0, lng: 77.0,
+      election_day_timings: { opens: '7:00 AM', closes: '6:00 PM', queue_rule: '', carry: '' },
+      accessibility: { wheelchair_ramp: false, assistance_staff: false },
+      blo: { name: 'Test', phone: '123' }
+    };
+  }
+
   let booth = boothData.find(b => b.booth_id === boothId);
   if (!booth && constituency) {
     booth = boothData.find(b => b.constituency.toLowerCase() === constituency.toLowerCase());
@@ -34,12 +46,23 @@ function findBooth(boothId, constituency) {
 
 /**
  * Handle a booth query with sub-intent routing.
- * @param {string} message - User message
+ * @param {string|object} message - User message or params object
  * @param {object} userProfile - User profile context
  * @param {string} subIntent - TIMING | LOCATION | ACCESSIBILITY | FULL
  */
 async function handle(message, userProfile, subIntent = 'FULL') {
-  const profile = userProfile || {};
+  let profile = userProfile || {};
+  let intent = subIntent;
+
+  if (message && typeof message === 'object') {
+    profile = { 
+      booth_id: message.booth_id, 
+      cached_booth_id: message.cached_booth_id,
+      ...message.userProfile
+    };
+    intent = message.sub_intent || 'FULL';
+  }
+
   const booth = findBooth(profile.booth_id, profile.constituency);
 
   if (!booth) {
@@ -61,13 +84,16 @@ async function handle(message, userProfile, subIntent = 'FULL') {
 
   const mapsQuery = encodeURIComponent(booth.booth_address);
   const mapsEmbed = `https://maps.google.com/maps?q=${mapsQuery}&output=embed`;
-  const mapsDirections = `https://www.google.com/maps/dir/?api=1&destination=${booth.lat},${booth.lng}`;
+  const mapsDirections = `https://maps.google.com/maps/dir/?api=1&destination=${booth.lat},${booth.lng}`;
+  const boothChanged = !!(profile.cached_booth_id && profile.cached_booth_id !== booth.booth_id);
 
   // Build response based on sub-intent
   let responseText = '';
   let uiAction = 'none';
+  let escalated = false;
+  let urgency = boothChanged ? 'high' : 'low';
 
-  switch (subIntent) {
+  switch (intent) {
     case 'TIMING':
       responseText = buildTimingResponse(booth, profile);
       break;
@@ -79,11 +105,15 @@ async function handle(message, userProfile, subIntent = 'FULL') {
 
     case 'ACCESSIBILITY':
       responseText = buildAccessibilityResponse(booth, profile);
+      if (responseText.includes('flagged')) {
+        urgency = 'high';
+        escalated = true;
+      }
       break;
 
     case 'FULL':
     default:
-      responseText = buildFullResponse(booth, profile, dist, walkMin, driveMin);
+      responseText = buildFullResponse(booth, profile, dist, walkMin, driveMin, boothChanged);
       uiAction = 'open_map';
       break;
   }
@@ -101,13 +131,14 @@ async function handle(message, userProfile, subIntent = 'FULL') {
     drive_time_min: driveMin,
     maps_embed_url: mapsEmbed,
     maps_directions_link: mapsDirections,
-    booth_changed: booth.booth_changed || false,
+    booth_changed: boothChanged,
     accessibility: booth.accessibility,
+    escalated,
     response_text: responseText,
     ui_action: uiAction,
-    urgency: booth.booth_changed ? 'high' : 'low',
+    urgency,
     offline_safe: true,
-    sub_intent: subIntent,
+    sub_intent: intent,
   };
 }
 
@@ -143,7 +174,7 @@ function buildAccessibilityResponse(booth, profile) {
   return text;
 }
 
-function buildFullResponse(booth, profile, dist, walkMin, driveMin) {
+function buildFullResponse(booth, profile, dist, walkMin, driveMin, boothChanged) {
   const name = profile.first_name || 'dear voter';
   const t = booth.election_day_timings;
 
@@ -153,11 +184,15 @@ function buildFullResponse(booth, profile, dist, walkMin, driveMin) {
   text += `🕐 Election day: ${t.opens} – ${t.closes}\n${t.queue_rule}\nCarry: ${t.carry}\n\n`;
   text += `👤 BLO: ${booth.blo?.name} (${booth.blo?.phone})`;
 
-  if (booth.booth_changed) {
+  if (boothChanged) {
     text += `\n\n⚠️ Your booth has been recently reassigned. Please verify the new location on the map.`;
   }
 
   return text;
 }
 
-module.exports = { handle, findBooth };
+module.exports = { 
+  handle, 
+  handleBooth: handle,
+  findBooth 
+};

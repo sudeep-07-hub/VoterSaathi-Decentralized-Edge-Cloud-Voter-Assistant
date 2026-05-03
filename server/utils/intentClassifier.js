@@ -42,8 +42,9 @@ const DOMAIN_KEYWORDS = {
                'help', 'report', 'harassment', 'intimidation', 'bribery',
                'not working', 'cannot', 'failed', 'stuck', 'broken',
                'unfair', 'corrupt', 'cheat', 'angry', 'terrible',
-               'worst', 'useless', 'cvigil', 'escalate', 'helpline'],
-    weight: 1.2, // Slightly higher weight — frustration should be caught
+               'worst', 'useless', 'cvigil', 'escalate', 'helpline',
+               'name is missing', 'name is deleted', 'wrongly deleted'],
+    weight: 4.0, // High weight to overpower individual words in other domains
   },
 };
 
@@ -132,6 +133,7 @@ function detectLanguage(message) {
  * @returns {string} TIMING | LOCATION | ACCESSIBILITY | FULL
  */
 function classifyBoothSubIntent(message) {
+  if (!message || typeof message !== 'string') return 'FULL';
   const lower = message.toLowerCase();
 
   const TIMING_KW = ['open', 'close', 'hours', 'time', 'when', 'till', 'until',

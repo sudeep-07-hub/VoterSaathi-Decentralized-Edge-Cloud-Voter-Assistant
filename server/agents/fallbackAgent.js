@@ -50,8 +50,15 @@ function pickSuggestions(userProfile, count = 3) {
 /**
  * Handle a fallback query
  */
-function handle(message, userProfile) {
-  const profile = userProfile || {};
+async function handle(message, userProfile) {
+  let msg = message;
+  let profile = userProfile || {};
+
+  if (message && typeof message === 'object') {
+    msg = message.message || '';
+    profile = message.userProfile || {};
+  }
+
   const suggestions = pickSuggestions(profile);
 
   // Check for proactive deadline trigger
@@ -69,7 +76,7 @@ function handle(message, userProfile) {
 
   return {
     agent_used: 'FALLBACK',
-    reason: `No specialist agent matched the query: "${message.substring(0, 50)}..."`,
+    reason: `No specialist agent matched the query: "${msg.substring(0, 50)}..."`,
     suggested_actions: suggestions,
     proactive_trigger: proactiveTrigger,
     proactive_deadline: proactiveTrigger ? alerts[0] : null,
@@ -80,4 +87,8 @@ function handle(message, userProfile) {
   };
 }
 
-module.exports = { handle, SUGGESTED_ACTIONS };
+module.exports = { 
+  handle, 
+  handleFallback: handle,
+  SUGGESTED_ACTIONS 
+};
