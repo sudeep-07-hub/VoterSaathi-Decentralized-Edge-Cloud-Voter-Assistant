@@ -84,7 +84,44 @@ function handle(message, userProfile) {
   // Generate contextual response
   let responseText = '';
 
-  if (lowerMsg.includes('epic') || lowerMsg.includes('voter id') || lowerMsg.includes('voter card')) {
+  // D3: Voter card trigger
+  const voterCardKeywords = ['show my voter card', 'voter card', 'my epic card', 'voter id card',
+    'view my card', 'show my card', 'voter slip', 'voter details', 'show my epic'];
+  const isVoterCardRequest = voterCardKeywords.some(k => lowerMsg.includes(k));
+
+  if (isVoterCardRequest) {
+    responseText = `Here's your EPIC card, ${profile.first_name}. All details are verified.`;
+    return {
+      agent_used: 'PROFILE',
+      profile_complete: completionPct === 100,
+      completion_pct: completionPct,
+      missing_fields: missingFields,
+      flags,
+      roll_part: profile.roll_part,
+      roll_serial: profile.roll_serial,
+      response_text: responseText,
+      ui_action: 'open_voter_card_modal',
+      voter_card_data: {
+        full_name: profile.name,
+        epic_masked: profile.epic_masked,
+        dob: profile.dob || '15 Aug 1992',
+        gender: profile.gender || 'Male',
+        constituency: profile.constituency,
+        assembly_no: profile.assembly_segment || '104',
+        part_no: profile.roll_part,
+        serial_no: profile.roll_serial,
+        address: profile.address || '12 Nehru Nagar, Hosur, Tamil Nadu 635109',
+        photo_url: profile.photo_url || null,
+        state: profile.state,
+        roll_year: '2026',
+        verified: completionPct === 100,
+      },
+      urgency: 'low',
+      offline_safe: true,
+    };
+  }
+
+  if (lowerMsg.includes('epic') || lowerMsg.includes('voter id')) {
     responseText = `${profile.first_name}, your EPIC number is ${profile.epic_masked}. You're registered in ${profile.constituency} Assembly Constituency, ${profile.state}. Roll Part ${profile.roll_part}, Serial ${profile.roll_serial}.`;
   } else if (lowerMsg.includes('complete') || lowerMsg.includes('missing') || lowerMsg.includes('incomplete')) {
     if (completionPct === 100) {

@@ -17,7 +17,9 @@ const DOMAIN_KEYWORDS = {
     keywords: ['booth', 'polling station', 'location', 'map', 'shifted', 'moved',
                'where do i vote', 'polling place', 'distance', 'directions',
                'how far', 'nearest', 'blo', 'booth level officer', 'accessible',
-               'wheelchair', 'ramp', 'navigate', 'route'],
+               'wheelchair', 'ramp', 'navigate', 'route',
+               'open', 'close', 'hours', 'time', 'timing', 'till', 'until',
+               'what time', 'polling hours'],
     weight: 1.0,
   },
   APPLICATION: {
@@ -124,4 +126,29 @@ function detectLanguage(message) {
   return { language: 'en', languageName: 'English', isIndic: false };
 }
 
-module.exports = { classifyIntent, detectLanguage };
+/**
+ * Classify booth sub-intent for D5 intelligence upgrade.
+ * @param {string} message
+ * @returns {string} TIMING | LOCATION | ACCESSIBILITY | FULL
+ */
+function classifyBoothSubIntent(message) {
+  const lower = message.toLowerCase();
+
+  const TIMING_KW = ['open', 'close', 'hours', 'time', 'when', 'till', 'until',
+    'timing', 'how long', 'what time', 'opens', 'closes', 'polling hours'];
+  const LOCATION_KW = ['where', 'location', 'address', 'map', 'directions',
+    'shifted', 'moved', 'find', 'distance', 'how far', 'route', 'navigate'];
+  const ACCESS_KW = ['wheelchair', 'accessible', 'disabled', 'ramp', 'blind',
+    'visually impaired', 'assistance', 'handicap', 'sign language'];
+
+  const timingScore = TIMING_KW.filter(k => lower.includes(k)).length;
+  const locationScore = LOCATION_KW.filter(k => lower.includes(k)).length;
+  const accessScore = ACCESS_KW.filter(k => lower.includes(k)).length;
+
+  if (accessScore > 0) return 'ACCESSIBILITY';
+  if (timingScore > 0 && locationScore === 0) return 'TIMING';
+  if (locationScore > 0 && timingScore === 0) return 'LOCATION';
+  return 'FULL';
+}
+
+module.exports = { classifyIntent, detectLanguage, classifyBoothSubIntent };

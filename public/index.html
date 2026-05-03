@@ -3,29 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="VoterSaathi+ — Proactive, multilingual, offline-capable voter assistance system for the Election Commission of India.">
+  <meta name="description" content="VoterSaathi+ — Proactive, multilingual voter assistance for the Election Commission of India.">
   <title>VoterSaathi+ — Voter Assistant</title>
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-  <div class="app-layout" id="appLayout">
+  <div class="shell" id="shell">
 
-    <!-- ═══ SIDEBAR NAV ═══ -->
-    <nav class="sidebar" aria-label="Main Navigation">
-      <div class="sidebar-logo">
-        <h1>VoterSaathi+</h1>
-        <div class="subtitle">Edge-Cloud Assistant</div>
+  <div class="logo-strip" id="logoStrip" onclick="toggleSidebar()">
+    <div class="logo-strip-brand">V+</div>
+    <div class="logo-strip-toggle">☰</div>
+  </div>
+
+    <!-- ═══ SIDEBAR ═══ -->
+    <nav class="sidebar" id="sidebar" aria-label="Main Navigation">
+      <div class="sidebar-head">
+        <div class="brand">
+          <div class="brand-name">VoterSaathi+</div>
+          <div class="brand-sub">ECI Edge Assistant</div>
+        </div>
+        <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Close sidebar">✕</button>
       </div>
 
       <div class="nav-section">
         <div class="nav-section-title">Overview</div>
-        <div class="nav-item active" data-page="dashboard" tabindex="0" role="button" aria-label="My Dashboard">
+        <div class="nav-item active" data-page="dashboard" tabindex="0" role="button">
           <span class="icon">🏠</span> My Dashboard
         </div>
-        <div class="nav-item" data-page="votercard" tabindex="0" role="button" aria-label="My Voter Card">
+        <div class="nav-item" data-page="votercard" tabindex="0" role="button" onclick="openVoterCard()">
           <span class="icon">🪪</span> My Voter Card
         </div>
-        <div class="nav-item" data-page="booth" tabindex="0" role="button" aria-label="Polling Booth">
+        <div class="nav-item" data-page="booth" tabindex="0" role="button">
           <span class="icon">📍</span> Polling Booth
         </div>
       </div>
@@ -34,13 +42,13 @@
 
       <div class="nav-section">
         <div class="nav-section-title">Actions</div>
-        <div class="nav-item" data-action="update" tabindex="0" role="button" aria-label="Update Details">
+        <div class="nav-item" data-action="update" tabindex="0" role="button">
           <span class="icon">✏️</span> Update Details
         </div>
-        <div class="nav-item" data-action="checkroll" tabindex="0" role="button" aria-label="Check Roll">
+        <div class="nav-item" data-action="checkroll" tabindex="0" role="button">
           <span class="icon">🔍</span> Check Roll
         </div>
-        <div class="nav-item" data-action="trackapp" tabindex="0" role="button" aria-label="Track Application">
+        <div class="nav-item" data-action="trackapp" tabindex="0" role="button">
           <span class="icon">📋</span> Track Application
         </div>
       </div>
@@ -49,118 +57,156 @@
 
       <div class="nav-section">
         <div class="nav-section-title">Alerts</div>
-        <div class="nav-item" data-action="deadlines" tabindex="0" role="button" aria-label="Deadlines">
+        <div class="nav-item" data-action="deadlines" tabindex="0" role="button">
           <span class="icon">⏰</span> Deadlines
           <span class="nav-badge" id="deadlineBadge">0</span>
         </div>
-        <div class="nav-item" data-action="announcements" tabindex="0" role="button" aria-label="Announcements">
+        <div class="nav-item" data-action="announcements" tabindex="0" role="button">
           <span class="icon">📢</span> Announcements
         </div>
       </div>
 
-      <div class="sidebar-footer">
-        <div class="version">VoterSaathi+ v1.0 · ECI</div>
-      </div>
+      <div class="sidebar-footer">VoterSaathi+ v2.0 · ECI</div>
     </nav>
 
     <!-- ═══ MAIN CONTENT ═══ -->
     <main class="main-content" id="mainContent">
 
-      <!-- Hero Card -->
-      <section class="hero-card" id="heroCard" aria-label="Voter Identity">
-        <div class="hero-top">
-          <div>
-            <h2 class="hero-name" id="heroName">Loading…</h2>
-            <div class="hero-meta">
-              <span id="heroConstituency">—</span>
-              <span id="heroState">—</span>
-              <span id="heroYear">2026</span>
-            </div>
-          </div>
-          <span class="status-badge verified" id="heroStatus">
-            <span>✓</span> Registered
-          </span>
+      <!-- Top bar -->
+      <div class="toprow">
+        <div class="page-title">Dashboard</div>
+        <div class="top-actions">
+          <div class="status-dot"></div>
+          <span class="status-label">Online · Synced</span>
+          <button class="chat-toggle-btn" id="chatToggleBtn" onclick="toggleChat()">
+            <span>💬</span> <span>Saathi Bot</span>
+          </button>
         </div>
+      </div>
+
+      <!-- Hero Card -->
+      <section class="hero" id="heroCard" aria-label="Voter Identity">
+        <div class="hero-flag">
+          <span style="background:#FF9933"></span>
+          <span style="background:#fff"></span>
+          <span style="background:#138808"></span>
+        </div>
+        <div class="hero-name" id="heroName">Loading…</div>
+        <div class="hero-meta" id="heroMeta">—</div>
+        <div class="hero-status" id="heroStatus">✓ Registered</div>
       </section>
 
       <!-- Profile-at-a-Glance Cards -->
-      <section class="glance-grid" aria-label="Profile at a Glance">
-        <div class="glance-card" id="cardEpic" tabindex="0" role="button" aria-label="Voter ID details">
-          <div class="card-icon">🪪</div>
-          <div class="card-label">EPIC Number</div>
-          <div class="card-value" id="epicValue">—</div>
-          <div class="card-badge verified" id="epicBadge">✓ Verified</div>
+      <section class="cards-grid" aria-label="Profile at a Glance">
+        <div class="icard" id="cardEpic">
+          <div class="icard-label">Epic Number</div>
+          <div class="icard-value" id="epicValue">—</div>
+          <div class="icard-sub" id="epicSub">Verified · Active</div>
+          <div class="icard-action" onclick="openVoterCard()">View full card →</div>
         </div>
-        <div class="glance-card" id="cardBooth" tabindex="0" role="button" aria-label="Polling booth details">
-          <div class="card-icon">📍</div>
-          <div class="card-label">Polling Booth</div>
-          <div class="card-value" id="boothValue">—</div>
-          <div class="card-sub" id="boothSub">—</div>
-          <div class="card-badge distance" id="boothBadge">— km away</div>
+        <div class="icard" id="cardBooth" onclick="sendChatMessage('Show my polling booth on map')">
+          <div class="icard-label">Polling Booth</div>
+          <div class="icard-value" id="boothValue">—</div>
+          <div class="icard-sub" id="boothSub">—</div>
+          <div class="icard-action">Open map →</div>
         </div>
-        <div class="glance-card" id="cardRoll" tabindex="0" role="button" aria-label="Roll details">
-          <div class="card-icon">📝</div>
-          <div class="card-label">Roll Part / Serial</div>
-          <div class="card-value" id="rollValue">—</div>
-          <div class="card-badge uptodate" id="rollBadge">✓ Up to date</div>
+        <div class="icard" id="cardRoll">
+          <div class="icard-label">Roll Part / Serial</div>
+          <div class="icard-value" id="rollValue">—</div>
+          <div class="icard-sub" id="rollSub">Up to date</div>
         </div>
       </section>
 
-      <!-- Completion Progress -->
-      <section class="progress-section" id="progressSection" aria-label="Profile Completion">
+      <!-- Registration Progress (D2: minimal step tracker) -->
+      <section class="progress-block" id="progressSection" aria-label="Profile Completion">
         <div class="progress-header">
-          <h3>Profile Completion</h3>
-          <span class="progress-pct" id="progressPct">0%</span>
+          <div class="progress-title">Registration completeness</div>
+          <div class="progress-pct" id="progressPct">0%</div>
         </div>
-        <div class="progress-bar-track">
-          <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width: 0%"></div>
         </div>
         <div class="progress-steps" id="progressSteps"></div>
       </section>
 
-      <!-- Map Container (hidden by default) -->
+      <!-- Map Container (hidden) -->
       <section class="map-container" id="mapContainer" aria-label="Polling Booth Map">
         <iframe id="mapFrame" title="Polling Booth Location" src="about:blank"></iframe>
       </section>
 
       <!-- Proactive Alerts -->
-      <section class="alerts-section" aria-label="Proactive Alerts">
-        <h3>⚡ Proactive Alerts</h3>
+      <section class="alerts-block" aria-label="Proactive Alerts">
+        <div class="alerts-header">Proactive alerts</div>
         <div id="alertsList"></div>
       </section>
-
     </main>
 
-    <!-- ═══ CHAT PANEL ═══ -->
-    <aside class="chat-panel" aria-label="Saathi Chat Assistant">
-      <div class="chat-header">
-        <h2>🤖 Saathi Bot</h2>
-        <div class="bot-status">Online · Ready to help</div>
+    <!-- ═══ CHAT PANEL (D4: collapsed by default) ═══ -->
+    <aside class="chat-panel" id="chatPanel" aria-label="Saathi Chat Assistant">
+      <div class="chat-resize-handle" id="chatResizeHandle">
+        <div class="chat-resize-dots"></div>
       </div>
-
-      <div class="chat-messages" id="chatMessages" role="log" aria-live="polite">
-        <!-- Messages rendered by JS -->
-        <div class="typing-indicator" id="typingIndicator">
-          <div class="typing-dot"></div>
-          <div class="typing-dot"></div>
-          <div class="typing-dot"></div>
+      <div class="chat-inner">
+        <div class="chat-header">
+          <h2>🤖 Saathi Bot</h2>
+          <div class="chat-bot-status">Online · Ready to help</div>
         </div>
-      </div>
-
-      <div class="chat-quick-actions" id="quickActions">
-        <!-- Quick buttons rendered by JS -->
-      </div>
-
-      <div class="chat-input-area">
-        <div class="chat-input-wrapper">
-          <input type="text" class="chat-input" id="chatInput"
-                 placeholder="Ask in any language…"
-                 aria-label="Chat message input"
-                 autocomplete="off">
-          <button class="chat-send-btn" id="chatSendBtn" aria-label="Send message">➤</button>
+        <div class="chat-messages" id="chatMessages" role="log" aria-live="polite">
+          <div class="typing" id="typingMsg">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+        <div class="chat-quick-actions" id="quickActions"></div>
+        <div class="chat-input-area">
+          <div class="chat-input-wrapper">
+            <input type="text" class="chat-input" id="chatInput"
+                   placeholder="Ask in any language…"
+                   aria-label="Chat message input" autocomplete="off">
+            <button class="chat-send-btn" id="chatSendBtn" aria-label="Send message">➤</button>
+          </div>
         </div>
       </div>
     </aside>
+
+    <!-- ═══ VOTER CARD MODAL (D3) ═══ -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+      <div class="voter-card">
+        <button class="vc-close" onclick="closeVoterCard()" aria-label="Close voter card">✕</button>
+        <div class="vc-top">
+          <div class="vc-eci">Election Commission of India</div>
+          <div class="vc-title">Electors Photo Identity Card</div>
+        </div>
+        <div class="vc-flag-strip">
+          <span style="background:#FF9933"></span>
+          <span style="background:#fff; border-top:1px solid #eee; border-bottom:1px solid #eee"></span>
+          <span style="background:#138808"></span>
+        </div>
+        <div class="vc-body">
+          <div class="vc-photo-row">
+            <div class="vc-photo" id="vcPhoto">👤</div>
+            <div class="vc-fields">
+              <div class="vc-field"><label>Full Name</label><span id="vc-name">—</span></div>
+              <div class="vc-field"><label>EPIC Number</label><span id="vc-epic">—</span></div>
+              <div class="vc-field"><label>Date of Birth</label><span id="vc-dob">—</span></div>
+              <div class="vc-field"><label>Gender</label><span id="vc-gender">—</span></div>
+            </div>
+          </div>
+          <div class="vc-divider"></div>
+          <div class="vc-row2">
+            <div class="vc-field"><label>Constituency</label><span id="vc-constituency">—</span></div>
+            <div class="vc-field"><label>Assembly Segment</label><span id="vc-assembly">—</span></div>
+            <div class="vc-field"><label>Part No.</label><span id="vc-part">—</span></div>
+            <div class="vc-field"><label>Serial No.</label><span id="vc-serial">—</span></div>
+          </div>
+          <div class="vc-divider"></div>
+          <div class="vc-field"><label>Address</label><span id="vc-address">—</span></div>
+        </div>
+        <div class="vc-bottom">
+          <span id="vc-footer-state">—</span>
+          <span id="vc-footer-status" style="color:var(--green); font-weight:500">✓ Verified</span>
+        </div>
+      </div>
+    </div>
 
   </div>
 

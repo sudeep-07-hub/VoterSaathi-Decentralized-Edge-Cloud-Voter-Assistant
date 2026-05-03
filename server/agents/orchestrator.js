@@ -4,7 +4,7 @@
  * and merges response with UI state payload for the frontend renderer.
  */
 
-const { classifyIntent, detectLanguage } = require('../utils/intentClassifier');
+const { classifyIntent, detectLanguage, classifyBoothSubIntent } = require('../utils/intentClassifier');
 const profileAgent = require('./profileAgent');
 const boothAgent = require('./boothAgent');
 const applicationAgent = require('./applicationAgent');
@@ -169,9 +169,11 @@ async function handleMessage(input) {
     case 'PROFILE':
       agentResponse = profileAgent.handle(processedMessage, userProfile);
       break;
-    case 'BOOTH':
-      agentResponse = await boothAgent.handle(processedMessage, userProfile);
+    case 'BOOTH': {
+      const boothSubIntent = classifyBoothSubIntent(processedMessage);
+      agentResponse = await boothAgent.handle(processedMessage, userProfile, boothSubIntent);
       break;
+    }
     case 'APPLICATION':
       agentResponse = applicationAgent.handle(processedMessage, userProfile);
       break;
@@ -252,6 +254,9 @@ function getDashboardData(userId, userProfile) {
       completion_pct: profileResult.completion_pct,
       photo_status: userProfileData.photo_status,
       language_pref: userProfileData.language_pref,
+      dob: userProfileData.dob,
+      gender: userProfileData.gender,
+      address: userProfileData.address,
     },
     suggested_actions: fallbackAgent.SUGGESTED_ACTIONS.slice(0, 4),
   };
